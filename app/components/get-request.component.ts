@@ -1,7 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable, Subject } from "rxjs";
-import { map, switchMap, tap } from "rxjs/operators";
+import { debounceTime, map, switchMap, tap } from "rxjs/operators";
 
 @Component({
   selector: "get-request",
@@ -18,10 +18,11 @@ export class GetRequestComponent implements OnInit {
 
   ngOnInit() {
     this.testOutput = this.intervalDataSub$.pipe(
-      switchMap(data => {
+      switchMap((data: number) => {
         return this.http
           .get<any>("https://api.npms.io/v2/search?q=scope:angular")
           .pipe(
+            debounceTime(data),
             map((res: any) => {
               return res;
             }),
@@ -39,6 +40,6 @@ export class GetRequestComponent implements OnInit {
   }
 
   callBE() {
-    this.intervalDataSub.next(1);
+    this.intervalDataSub.next(100);
   }
 }
